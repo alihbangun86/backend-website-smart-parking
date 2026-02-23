@@ -21,8 +21,9 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Biarkan fleksibel untuk development
+    origin: "https://smartpark.my.id",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 

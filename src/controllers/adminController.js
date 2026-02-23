@@ -145,42 +145,53 @@ const verifikasiPengguna = async (req, res) => {
   }
 };
 
-/* =====================================================
-   LIST DATA PENGGUNA
-===================================================== */
 const getDataPengguna = async (req, res) => {
   try {
     const { search, limit, offset, status } = req.query;
-    const safeLimit = parseInt(limit) || 10;
-    const safeOffset = parseInt(offset) || 0;
+
+    const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
+    const safeOffset = Number(offset) >= 0 ? Number(offset) : 0;
 
     let whereClauses = [];
     let params = [];
 
-    if (search) {
+    // 🔍 SEARCH
+    if (search && search.trim() !== "") {
       whereClauses.push("(p.nama LIKE ? OR p.npm LIKE ? OR k.plat_nomor LIKE ?)");
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    if (status) {
+    // 🔍 STATUS FILTER
+    if (status !== undefined && status !== "") {
       whereClauses.push("p.status_akun = ?");
-      params.push(status);
+      params.push(Number(status));
     }
 
-    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+    const whereSql =
+      whereClauses.length > 0
+        ? `WHERE ${whereClauses.join(" AND ")}`
+        : "";
 
-    // 1️⃣ Hitung total (untuk pagination)
-    const [countResult] = await query(`
+    // =======================
+    // 1️⃣ TOTAL DATA
+    // =======================
+    const countRows = await query(
+      `
       SELECT COUNT(*) as total
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
-    `, params);
+      `,
+      params
+    );
 
-    const totalData = countResult ? countResult.total : 0;
+    const totalData = countRows[0]?.total || 0;
 
-    // 2️⃣ Ambil data paginasi
-    const rows = await query(`
+    // =======================
+    // 2️⃣ DATA PAGINASI
+    // =======================
+    const rows = await query(
+      `
       SELECT 
         p.npm,
         p.nama,
@@ -192,7 +203,7 @@ const getDataPengguna = async (req, res) => {
         k.stnk,
         COALESCE(
           (SELECT batas_parkir FROM kuota_parkir WHERE npm = p.npm ORDER BY id_kuota DESC LIMIT 1),
-          (SELECT batas_parkir FROM kuota_parkir WHERE npm IS NULL ORDER BY id_kuota DESC LIMIT 1), 
+          (SELECT batas_parkir FROM kuota_parkir WHERE npm IS NULL ORDER BY id_kuota DESC LIMIT 1),
           0
         ) - (
           SELECT COUNT(*) 
@@ -205,15 +216,18 @@ const getDataPengguna = async (req, res) => {
       ${whereSql}
       ORDER BY p.nama ASC
       LIMIT ? OFFSET ?
-    `, [...params, safeLimit, safeOffset]);
+      `,
+      [...params, safeLimit, safeOffset]
+    );
 
     return res.status(200).json({
       status: "success",
       data: rows,
       total: totalData,
     });
+
   } catch (err) {
-    console.error("getDataPengguna:", err);
+    console.error("getDataPengguna ERROR:", err);
     return res.status(500).json({
       status: "error",
       message: "Gagal mengambil data pengguna",
