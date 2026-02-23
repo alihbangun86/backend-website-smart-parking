@@ -567,8 +567,8 @@ const getDataParkir = async (req, res) => {
       LEFT JOIN pengguna p ON k.npm = p.npm
       ${whereSql}
       ORDER BY l.waktu_masuk DESC
-      LIMIT ? OFFSET ?
-    `, [...params, safeLimit, safeOffset]);
+      LIMIT ${safeLimit} OFFSET ${safeOffset}
+    `, params);
 
     const formattedData = rows.map(r => {
       const masukDate = r.waktu_masuk ? new Date(r.waktu_masuk) : null;
