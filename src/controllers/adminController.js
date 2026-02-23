@@ -215,9 +215,9 @@ const getDataPengguna = async (req, res) => {
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
       ORDER BY p.nama ASC
-      LIMIT ? OFFSET ?
+      LIMIT ${safeLimit} OFFSET ${safeOffset}
       `,
-      [...params, safeLimit, safeOffset]
+      params
     );
 
     return res.status(200).json({
