@@ -1,58 +1,52 @@
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const { connectToDatabase } = require("./config/database");
 
 require("./utils/kuotaBulanan");
-//ROUTES
+
+// ROUTES
 const penggunaRoutes = require("./routes/penggunaRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const statistikRoutes = require("./routes/statistikRoutes");
 const parkirRoutes = require("./routes/parkirRoutes");
 const statcardRoutes = require("./routes/statcardRoutes");
 
-const http = require("http");
-const { Server } = require("socket.io");
-
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.io
-const io = new Server(server, {
-  cors: {
-    origin: "https://smartpark.my.id",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-// Store io in app settings to be accessible in controllers
-app.set("io", io);
-
-io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-  });
-});
-
-/*BASIC CONFIG*/
+/* BASIC CONFIG */
 app.disable("x-powered-by");
 
-/*CORS*/
+/* CORS (SUPPORT DEV + PROD) */
 app.use(
   cors({
-    origin: true, // Pantulkan origin request (fleksibel)
+    origin: ["http://localhost:3000", "https://smartpark.my.id"],
     credentials: true,
   })
 );
 
-/* BODY PARSER 
- * NOTE:
- * express.json() tetap dipakai
- * tapi upload file harus pakai multer di route, bukan di sini
- */
+/* SESSION */
+app.use(
+  session({
+    secret: "SMARTPARK_SESSION_SECRET",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // true kalau HTTPS + reverse proxy
+      sameSite: "lax",
+      maxAge: 8 * 60 * 60 * 1000,
+    },
+  })
+);
+
+/* BODY PARSER */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("public/uploads"));
@@ -66,54 +60,47 @@ app.use((req, res, next) => {
 /* DATABASE */
 connectToDatabase();
 
-/* HEALTH CHECK */
-app.get("/api/health", (req, res) => {
-  return res.status(200).json({
-    status: "success",
-    message: "Server & Database aktif",
-    timestamp: new Date(),
-  });
+/* SOCKET.IO */
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "https://smartpark.my.id"],
+    credentials: true,
+  },
 });
 
-/* ROUTES*/
+app.set("io", io);
 
-// MAHASISWA
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+});
+
+/* ROUTES */
 app.use("/api/pengguna", penggunaRoutes);
-
-// ADMIN
 app.use("/api/admin", adminRoutes);
-
-// PARKIR
 app.use("/api/parkir", parkirRoutes);
-
-// STATISTIK
 app.use("/api/statistik", statistikRoutes);
-
-// STATCARD
 app.use("/api/statcard", statcardRoutes);
 
-/* 404 HANDLER */
+/* 404 */
 app.use((req, res) => {
-  return res.status(404).json({
+  res.status(404).json({
     status: "error",
     message: "Endpoint tidak ditemukan",
-    path: req.originalUrl,
   });
 });
 
-/*GLOBAL ERROR HANDLER */
+/* ERROR HANDLER */
 app.use((err, req, res, next) => {
   console.error("Server Error:", err);
-
-  return res.status(err.status || 500).json({
+  res.status(500).json({
     status: "error",
-    message: err.message || "Internal server error",
+    message: "Internal server error",
   });
 });
 
-/*START SERVER */
+/* START */
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(` Server aktif di http://localhost:${PORT}`);
+  console.log(`Server aktif di port ${PORT}`);
 });
