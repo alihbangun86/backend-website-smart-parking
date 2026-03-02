@@ -1,6 +1,4 @@
--- =========================
 -- DATABASE
--- =========================
 
 show databases;
 
@@ -10,9 +8,7 @@ drop database if exists parkir_db;
 
 USE parkir_db;
 
--- =========================
 -- TABEL PENGGUNA
--- =========================
 CREATE TABLE pengguna (
     npm VARCHAR(50) PRIMARY KEY,
     nama VARCHAR(50) NOT NULL,
@@ -26,18 +22,14 @@ CREATE TABLE pengguna (
     tanggal_daftar DATETIME
 );
 
--- =========================
 -- TABEL ADMIN
--- =========================
 CREATE TABLE admin (
     id_admin INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 
--- =========================
 -- TABEL KENDARAAN
--- =========================
 CREATE TABLE kendaraan (
     id_kendaraan INT AUTO_INCREMENT PRIMARY KEY,
     npm VARCHAR(50) NOT NULL,
@@ -50,9 +42,7 @@ CREATE TABLE kendaraan (
         ON DELETE CASCADE
 );
 
--- =========================
 -- TABEL RFID
--- =========================
 CREATE TABLE rfid (
     id_rfid INT AUTO_INCREMENT PRIMARY KEY,
     id_kendaraan INT NOT NULL,
@@ -65,9 +55,7 @@ CREATE TABLE rfid (
         ON DELETE CASCADE
 );
 
--- =========================
 -- TABEL SLOT PARKIR
--- =========================
 CREATE TABLE slot_parkir (
     id_slot INT AUTO_INCREMENT PRIMARY KEY,
     jumlah INT,
@@ -77,9 +65,7 @@ CREATE TABLE slot_parkir (
         REFERENCES admin(id_admin)
 );
 
--- =========================
 -- TABEL KUOTA PARKIR
--- =========================
 DROP TABLE IF EXISTS kuota_parkir;
 
 CREATE TABLE kuota_parkir (
@@ -115,9 +101,7 @@ CREATE TABLE kuota_parkir (
     UNIQUE KEY unique_kendaraan (id_kendaraan)
 );
 
--- =========================
 -- TABEL LOG PARKIR
--- =========================
 CREATE TABLE log_parkir (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
     id_kendaraan INT NOT NULL,
@@ -134,7 +118,6 @@ CREATE TABLE log_parkir (
 );
 
 -- Tabel OTP
-
 CREATE TABLE reset_password_otp (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(50) NOT NULL,
@@ -142,7 +125,7 @@ CREATE TABLE reset_password_otp (
     expired_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
+-- Tabel RFID session
 CREATE TABLE rfid_registration_session (
     id_session INT AUTO_INCREMENT PRIMARY KEY,
     id_kendaraan INT NOT NULL,

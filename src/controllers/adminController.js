@@ -3,8 +3,6 @@ const PDFDocument = require("pdfkit");
 const { sendVerificationEmail, sendRejectionEmail } = require("../utils/email");
 
 /*LOGIN ADMIN */
-const jwt = require("jsonwebtoken");
-
 const loginAdmin = async (req, res) => {
   try {
     const { nama, password } = req.body;
@@ -28,21 +26,14 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // BUAT TOKEN
-    const token = jwt.sign(
-      {
+    return res.status(200).json({
+      status: "success",
+      message: "Login admin berhasil",
+      data: {
         id_admin: rows[0].id_admin,
         nama: rows[0].nama,
         role: "admin",
       },
-      "SECRET_KEY_ADMIN", // ganti pakai env nanti
-      { expiresIn: "8h" }
-    );
-
-    return res.status(200).json({
-      status: "success",
-      message: "Login admin berhasil",
-      token,
     });
   } catch (err) {
     console.error("loginAdmin:", err);
