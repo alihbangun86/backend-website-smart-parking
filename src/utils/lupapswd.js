@@ -1,18 +1,18 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-// 🔎 Debug (hapus nanti kalau sudah normal)
+// Debug 
 console.log("EMAIL:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "ADA" : "TIDAK ADA");
 
-// 🚨 Cek apakah env tersedia
+// Cek apakah env tersedia
 if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     throw new Error(
         "EMAIL_USER atau EMAIL_PASS belum diset di file .env"
     );
 }
 
-// 🔐 Buat transporter Gmail
+// Buat transporter Gmail
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -21,9 +21,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// ===================================================
 // FUNGSI KIRIM OTP
-// ===================================================
 const sendOtpEmail = async (to, otp) => {
     try {
         const mailOptions = {

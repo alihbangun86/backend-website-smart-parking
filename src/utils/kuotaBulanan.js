@@ -1,12 +1,12 @@
 const cron = require("node-cron");
 const { query } = require("../config/database");
 
-console.log("🟢 Cron kuota bulanan aktif...");
+console.log("Cron kuota bulanan aktif...");
 
 // Jalan setiap tanggal 1 jam 00:00
 cron.schedule("* * 1 * *", async () => {
   try {
-    console.log("🗓️ RESET KUOTA BULANAN:", new Date());
+    console.log("RESET KUOTA BULANAN:", new Date());
 
     const now = new Date();
     const periode = now.toISOString().slice(0, 7); // format YYYY-MM
@@ -23,9 +23,9 @@ cron.schedule("* * 1 * *", async () => {
       AND kp.periode_bulan != ?
     `, [periode, periode]);
 
-    console.log("✅ Kuota berhasil direset untuk bulan baru");
+    console.log("Kuota berhasil direset untuk bulan baru");
 
   } catch (err) {
-    console.error("❌ Gagal reset kuota:", err);
+    console.error("Gagal reset kuota:", err);
   }
 });

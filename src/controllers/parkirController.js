@@ -1,9 +1,7 @@
 const { query } = require("../config/database");
 
 
-/* PARKIR SCAN (MASUK / KELUAR OTOMATIS)
- * KUOTA PERSONAL
- * 1 PARKIR = MASUK + KELUAR = 1 KUOTA */
+/* PARKIR SCAN */
 const parkirScan = async (req, res) => {
   try {
     const { kode_rfid, gate } = req.body;
@@ -26,9 +24,7 @@ const parkirScan = async (req, res) => {
     const uid = kode_rfid.trim().toUpperCase();
     console.log("Cleaned RFID UID:", uid);
 
-    /* ======================
-       1️⃣ VALIDASI RFID
-    ====================== */
+    /* VALIDASI RFID */
     const rfidQuery = `
       SELECT r.id_kendaraan, k.npm, r.status_rfid, p.status_akun
       FROM rfid r

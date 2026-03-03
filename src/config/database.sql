@@ -125,7 +125,7 @@ CREATE TABLE reset_password_otp (
     expired_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
--- Tabel RFID session
+-- Tabel RFID
 CREATE TABLE rfid_registration_session (
     id_session INT AUTO_INCREMENT PRIMARY KEY,
     id_kendaraan INT NOT NULL,

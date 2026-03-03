@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session");
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -53,7 +52,7 @@ app.use("/uploads", express.static("public/uploads"));
 
 /* REQUEST LOGGER */
 app.use((req, res, next) => {
-  console.log("➡️ HIT:", req.method, req.originalUrl);
+  console.log("HIT:", req.method, req.originalUrl);
   next();
 });
 
