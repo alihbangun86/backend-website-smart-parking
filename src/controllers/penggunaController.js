@@ -282,7 +282,7 @@ const editProfilPengguna = async (req, res) => {
 
     console.log(`Profil NPM ${trimmedNpm} berhasil diperbarui`);
 
-    // 📡 Real-time update untuk Admin
+    // Real-time update untuk Admin
     const io = req.app.get("io");
     if (io) io.emit("user_update", { action: "EDIT_PROFIL", npm: trimmedNpm });
 
