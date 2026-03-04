@@ -89,6 +89,8 @@ const registerPengguna = async (req, res) => {
 };
 
 /*LOGIN*/
+const jwt = require("jsonwebtoken");
+
 const loginPengguna = async (req, res) => {
   try {
     const { npm, password } = req.body;
@@ -115,7 +117,6 @@ const loginPengguna = async (req, res) => {
 
     const user = rows[0];
 
-    // Cek status_akun (1 = Aktif)
     if (user.status_akun !== 1) {
       let msg = "Akun belum diverifikasi admin";
       if (user.status_akun === 2) msg = "Akun Anda telah ditangguhkan/diblokir";
@@ -128,7 +129,6 @@ const loginPengguna = async (req, res) => {
 
     const match = await bcrypt.compare(password, user.password);
 
-
     if (!match) {
       return res.status(401).json({
         status: "error",
@@ -136,7 +136,18 @@ const loginPengguna = async (req, res) => {
       });
     }
 
-    //PASTIKAN USER PUNYA KUOTA SAAT LOGIN
+    // Generate JWT
+    const token = jwt.sign(
+      {
+        npm: user.npm,
+        nama: user.nama,
+        role: "user",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
+    // Pastikan user punya kuota
     const existingKuota = await query(
       "SELECT id_kuota FROM kuota_parkir WHERE npm = ? LIMIT 1",
       [user.npm]
@@ -153,6 +164,7 @@ const loginPengguna = async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "Login berhasil",
+      token,
       data: {
         npm: user.npm,
         nama: user.nama,
@@ -161,6 +173,7 @@ const loginPengguna = async (req, res) => {
         prodi: user.prodi,
       },
     });
+
   } catch (error) {
     console.error("LOGIN ERROR: ", error);
     return res.status(500).json({
@@ -169,7 +182,6 @@ const loginPengguna = async (req, res) => {
     });
   }
 };
-
 /*GET PROFIL*/
 const getProfilPengguna = async (req, res) => {
   try {
