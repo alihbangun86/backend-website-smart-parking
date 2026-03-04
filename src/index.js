@@ -22,14 +22,17 @@ const server = http.createServer(app);
 /* BASIC CONFIG */
 app.disable("x-powered-by");
 
-/* CORS (SUPPORT DEV + PROD) */
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://smartpark.my.id"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://smartpark.my.id",
+      "https://www.smartpark.my.id"
+    ],
     credentials: true,
   })
 );
-
 
 /* BODY PARSER */
 app.use(express.json());
@@ -48,11 +51,15 @@ connectToDatabase();
 /* SOCKET.IO */
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://smartpark.my.id"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://smartpark.my.id",
+      "https://www.smartpark.my.id"
+    ],
     credentials: true,
   },
 });
-
 app.set("io", io);
 
 io.on("connection", (socket) => {
