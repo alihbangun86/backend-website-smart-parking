@@ -46,10 +46,10 @@ async function migrate() {
                 await query("ALTER TABLE kuota_parkir ADD CONSTRAINT fk_kuota_pengguna FOREIGN KEY (npm) REFERENCES pengguna(npm) ON DELETE CASCADE");
                 console.log("Added foreign key constraint to 'kuota_parkir'");
             } catch (e) {
-                console.log("ℹConstraint might already exist:", e.message);
+                console.log("Constraint might already exist:", e.message);
             }
         } else {
-            console.log("ℹColumn npm in 'kuota_parkir' already exists");
+            console.log("Column npm in 'kuota_parkir' already exists");
         }
 
         console.log("Migration successful!");

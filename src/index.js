@@ -30,20 +30,6 @@ app.use(
   })
 );
 
-/* SESSION */
-app.use(
-  session({
-    secret: "SMARTPARK_SESSION_SECRET",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false, // true kalau HTTPS + reverse proxy
-      sameSite: "lax",
-      maxAge: 8 * 60 * 60 * 1000,
-    },
-  })
-);
 
 /* BODY PARSER */
 app.use(express.json());

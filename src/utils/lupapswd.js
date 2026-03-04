@@ -37,10 +37,10 @@ const sendOtpEmail = async (to, otp) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("✅ OTP berhasil dikirim ke:", to);
+        console.log("OTP berhasil dikirim ke:", to);
 
     } catch (error) {
-        console.error("❌ Email transporter error:", error);
+        console.error("Email transporter error:", error);
         throw error;
     }
 };

@@ -41,12 +41,12 @@ const sendVerificationEmail = async (toEmail) => {
       `,
         });
 
-        console.log("✅ Email berhasil dikirim:", info.messageId);
-        console.log("📧 Diterima oleh:", info.accepted);
+        console.log("Email berhasil dikirim:", info.messageId);
+        console.log("Diterima oleh:", info.accepted);
 
         return info;
     } catch (error) {
-        console.error("❌ Gagal mengirim email:", error.message);
+        console.error("Gagal mengirim email:", error.message);
         console.error("Detail error:", error);
         throw error;
     }
@@ -72,10 +72,10 @@ const sendRegistrationPendingEmail = async (toEmail, nama) => {
       `,
         });
 
-        console.log("✅ Email pendaftaran dikirim:", info.messageId);
+        console.log("Email pendaftaran dikirim:", info.messageId);
         return info;
     } catch (error) {
-        console.error("❌ Gagal mengirim email pendaftaran:", error.message);
+        console.error("Gagal mengirim email pendaftaran:", error.message);
         // Jangan throw error agar registrasi tetap sukses walaupun email gagal
     }
 };
@@ -100,10 +100,10 @@ const sendRejectionEmail = async (toEmail, nama, alasan = "Data tidak valid atau
       `,
         });
 
-        console.log("✅ Email penolakan dikirim:", info.messageId);
+        console.log("Email penolakan dikirim:", info.messageId);
         return info;
     } catch (error) {
-        console.error("❌ Gagal mengirim email penolakan:", error.message);
+        console.error("Gagal mengirim email penolakan:", error.message);
     }
 };
 
