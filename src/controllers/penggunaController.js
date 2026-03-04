@@ -18,6 +18,14 @@ const registerPengguna = async (req, res) => {
       });
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password harus minimal 8 karakter dengan kombinasi huruf besar, huruf kecil, angka, dan karakter khusus",
+      });
+    }
+
     const [existing] = await connection.query(
       "SELECT npm FROM pengguna WHERE npm = ? OR email = ?",
       [npm, email]
@@ -313,6 +321,14 @@ const changePassword = async (req, res) => {
       });
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password_baru)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password baru harus minimal 8 karakter dengan kombinasi huruf besar, huruf kecil, angka, dan karakter khusus",
+      });
+    }
+
     const userRows = await query(
       "SELECT password FROM pengguna WHERE npm = ? LIMIT 1",
       [npm]
@@ -441,6 +457,14 @@ const resetPasswordOtp = async (req, res) => {
       return res.status(401).json({
         status: "error",
         message: "OTP tidak valid atau kadaluarsa",
+      });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password_baru)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password baru harus minimal 8 karakter dengan kombinasi huruf besar, huruf kecil, angka, dan karakter khusus",
       });
     }
 
