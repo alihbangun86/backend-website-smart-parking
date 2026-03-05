@@ -15,7 +15,7 @@ const {
 } = require("../controllers/penggunaController");
 
 const upload = require("../utils/upload");
-const authUser = require("../middleware/authUser");
+const auth = require("../middleware/auth");
 
 /* AUTH ROUTES */
 
@@ -39,13 +39,13 @@ router.post("/auth/reset-password", resetPasswordOtp);
 
 /* USER ROUTES */
 
-// GET PROFIL
-router.get("/users/profile/:npm", authUser, getProfilPengguna);
+// GET PROFIL (admin atau user boleh akses)
+router.get("/users/profile/:npm", auth, getProfilPengguna);
 
 // UPDATE PROFIL
 router.put(
   "/users/profile",
-  authUser,
+  auth,
   upload.fields([
     { name: "foto", maxCount: 1 },
     { name: "stnk", maxCount: 1 },
@@ -54,9 +54,9 @@ router.put(
 );
 
 // RIWAYAT PARKIR
-router.get("/users/riwayat/:npm", authUser, riwayatParkirPengguna);
+router.get("/users/riwayat/:npm", auth, riwayatParkirPengguna);
 
 // CHANGE PASSWORD
-router.post("/users/change-password", authUser, changePassword);
+router.post("/users/change-password", auth, changePassword);
 
 module.exports = router;

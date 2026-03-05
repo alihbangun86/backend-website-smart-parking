@@ -28,14 +28,14 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // BUAT TOKEN
+    // Generate JWT ADMIN
     const token = jwt.sign(
       {
         id_admin: rows[0].id_admin,
         nama: rows[0].nama,
         role: "admin",
       },
-      "SECRET_KEY_ADMIN", // ganti pakai env nanti
+      process.env.JWT_SECRET_ADMIN,
       { expiresIn: "8h" }
     );
 
