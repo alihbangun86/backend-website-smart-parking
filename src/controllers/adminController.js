@@ -157,7 +157,7 @@ const getDataPengguna = async (req, res) => {
     // SEARCH
     if (search && String(search).trim() !== "") {
       const s = `%${search}%`;
-      whereClauses.push("(LOWER(p.nama) LIKE LOWER(?) OR LOWER(p.npm) LIKE LOWER(?) OR LOWER(k.plat_nomor) LIKE LOWER(?))");
+      whereClauses.push("(p.nama LIKE ? OR p.npm LIKE ? OR k.plat_nomor LIKE ?)");
       params.push(s, s, s);
     }
 
