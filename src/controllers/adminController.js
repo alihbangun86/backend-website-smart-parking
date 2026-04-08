@@ -175,7 +175,7 @@ const getDataPengguna = async (req, res) => {
     //TOTAL DATA
     const countRows = await query(
       `
-      SELECT COUNT(DISTINCT p.npm) as total
+      SELECT COUNT(*) as total
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
@@ -205,7 +205,6 @@ const getDataPengguna = async (req, res) => {
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
-      GROUP BY p.npm
       ORDER BY p.nama ASC
       LIMIT ${safeLimit} OFFSET ${safeOffset}
       `,
