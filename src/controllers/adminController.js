@@ -146,7 +146,7 @@ const verifikasiPengguna = async (req, res) => {
 
 const getDataPengguna = async (req, res) => {
   try {
-    const { search, limit, offset, status } = req.query;
+    const { search = "", limit = 10, offset = 0, status = "" } = req.query;
 
     const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
     const safeOffset = Number(offset) >= 0 ? Number(offset) : 0;
@@ -155,9 +155,10 @@ const getDataPengguna = async (req, res) => {
     let params = [];
 
     // SEARCH
-    if (search && search.trim() !== "") {
-      whereClauses.push("(p.nama LIKE ? OR p.npm LIKE ? OR k.plat_nomor LIKE ?)");
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    if (search && String(search).trim() !== "") {
+      const s = `%${search}%`;
+      whereClauses.push("(LOWER(p.nama) LIKE LOWER(?) OR LOWER(p.npm) LIKE LOWER(?) OR LOWER(k.plat_nomor) LIKE LOWER(?))");
+      params.push(s, s, s);
     }
 
     // STATUS FILTER
@@ -174,7 +175,7 @@ const getDataPengguna = async (req, res) => {
     //TOTAL DATA
     const countRows = await query(
       `
-      SELECT COUNT(*) as total
+      SELECT COUNT(DISTINCT p.npm) as total
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
@@ -218,6 +219,7 @@ const getDataPengguna = async (req, res) => {
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
+      GROUP BY p.npm
       ORDER BY p.nama ASC
       LIMIT ${safeLimit} OFFSET ${safeOffset}
       `,
