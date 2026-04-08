@@ -197,25 +197,11 @@ const getDataPengguna = async (req, res) => {
         p.status_akun,
         k.plat_nomor,
         k.stnk,
-        COALESCE(
-          (SELECT batas_parkir 
+        (SELECT (batas_parkir - jumlah_terpakai)
           FROM kuota_parkir 
           WHERE npm = p.npm 
           ORDER BY id_kuota DESC 
-          LIMIT 1),
-          (SELECT batas_parkir 
-          FROM kuota_parkir 
-          WHERE npm IS NULL 
-          ORDER BY id_kuota DESC 
-          LIMIT 1),
-          0
-        ) - (
-          SELECT COUNT(*) 
-          FROM log_parkir l2 
-          JOIN kendaraan k2 
-            ON l2.id_kendaraan = k2.id_kendaraan 
-          WHERE k2.npm = p.npm
-        ) AS sisa_kuota
+          LIMIT 1) AS sisa_kuota
       FROM pengguna p
       LEFT JOIN kendaraan k ON p.npm = k.npm
       ${whereSql}
